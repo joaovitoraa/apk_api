@@ -1,9 +1,9 @@
-import Blog from '../models/Blog.js';
+import blog from '../models/Blog.js';
 
 class BlogController {
   static async pesquisarblog(req, res, next) {
     try {
-      const pesquisaBlog = await Blog.find({});
+      const pesquisaBlog = await blog.find({});
       res.status(200).json(pesquisaBlog);
     } catch (error) {
       next(error);
@@ -13,7 +13,7 @@ class BlogController {
   static async pesquisarblogPorId(req, res, next) {
     try {
       const id = req.params.id;
-      const posteEncontrado = await Blog.findById(id);
+      const posteEncontrado = await blog.findById(id);
       if (!posteEncontrado) {
         return res.status(404).json({ message: 'Poste não encontrado' });
       }
@@ -37,7 +37,7 @@ class BlogController {
           .json({ message: 'Título e descrição são obrigatórios!' });
       }
 
-      const posteCriado = await Blog.create({ titulo, descricao, image });
+      const posteCriado = await blog.create({ titulo, descricao, image });
       console.log('Poste criado:', posteCriado);
 
       res
@@ -52,7 +52,7 @@ class BlogController {
   static async atualizarPoste(req, res, next) {
     try {
       const id = req.params.id;
-      const atualizado = await Blog.findByIdAndUpdate(id, req.body, {
+      const atualizado = await blog.findByIdAndUpdate(id, req.body, {
         new: true,
       });
 
@@ -63,6 +63,15 @@ class BlogController {
       res.status(200).json({ message: 'Poste atualizado', blog: atualizado });
     } catch (error) {
       next(error);
+    }
+  }
+  static async deletarPoster(req, res, next) {
+    try {
+      const id = req.params.id;
+      await blog.findByIdAndDelete(id);
+      res.status(200).json({ message: 'Poster excluido' });
+    } catch (erro) {
+      next(erro);
     }
   }
 }

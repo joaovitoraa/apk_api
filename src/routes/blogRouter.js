@@ -7,5 +7,6 @@ routes.get('/poster', BlogController.pesquisarblog);
 routes.get('/poster/:id', BlogController.pesquisarblogPorId);
 routes.post('/poster', BlogController.cadastrarPoste);
 routes.put('/poster/:id', BlogController.atualizarPoste);
+routes.delete('/poster/:id', BlogController.deletarPoster);
 
 export default routes;
