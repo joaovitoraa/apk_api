@@ -1,7 +1,38 @@
 import bcrypt from 'bcryptjs';
 import { user } from '../models/User.js';
+import jwt from 'jsonwebtoken';
 
 class UsuarioController {
+  static async loginUsuario(req, res, next) {
+    try {
+      const { email, senha } = req.body;
+
+      // Verifica se o usuário existe
+      const usuario = await user.findOne({ email });
+      if (!usuario) {
+        return res.status(401).json({ message: 'E-mail ou senha inválidos' });
+      }
+
+      // Verifica a senha
+      const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+      if (!senhaCorreta) {
+        return res.status(401).json({ message: 'E-mail ou senha inválidos' });
+      }
+
+      // Gera um token JWT
+      const token = jwt.sign(
+        { id: usuario._id, email: usuario.email },
+        'seuSegredoSuperSecreto', // 🔒 Troque isso por uma variável de ambiente!
+        { expiresIn: '1h' },
+      );
+
+      res.status(200).json({ message: 'Login realizado com sucesso!', token });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+
   static async listarUsuarios(req, res, next) {
     try {
       const listaUsuarios = await user.find({}).select('-senha'); // Não retorna a senha
